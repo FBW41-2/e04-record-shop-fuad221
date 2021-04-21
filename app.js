@@ -22,8 +22,8 @@ app.use(cookieParser());
 /** STATIC FILES*/
 app.use(express.static(path.join(__dirname, 'public')));
 
-/** ROUTES */
-app.use('/', indexRouter);
+/** ROUTES */ // task 01
+app.use('/api', indexRouter);
 app.use('/users', usersRouter);
 
 /** EXPORT PATH */

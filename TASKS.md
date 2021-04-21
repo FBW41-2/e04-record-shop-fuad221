@@ -17,7 +17,7 @@ Most applications made for the web have to do with some sort of data manipulatio
 1. Please create two endpoints(routes) for the shop owner
 
    - `api/records` -> a `GET` that will return all records of the store
-   - `api/records` -> a `POST` that will add a new record to the record collection
+   - `api/records` -> a `POST` that will add a new record to the reouou9u77cord collection
 
    For now you can just return a string from the above endpoints, just to make sure everything works. 
 
