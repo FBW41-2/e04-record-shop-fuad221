@@ -1,4 +1,5 @@
 // first step with task2
+// setCors is a const 
 exports.setCors = (req, res, next) => {
     //when you want sent data to server .... for scuricty
     res.header("Access-Control-Allow-Origin", "*");
