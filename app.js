@@ -17,12 +17,22 @@ const app = express();
 app.use(logger("dev"));
 
 /** env Varible **/
-const dbPassword = process.env.DB_PASSWORD;
-const dbUser = process.env.DB_USER;
-const dbUrl = process.env.DB_URL
 
+const dbUser = process.env.DB_USER
+const dbPassword = process.env.DB_PASSWORD
+const dbURL = process.env.DB_URL
+
+const localDbURI = "mongodb://localhost:27017/record-shop"
+const atlasURI = `mongodb+srv://${dbUser}:${dbPassword}@${dbURL}`
+mongoose.connect(
+        process.env.NODE_ENV == 'autograding' ? localDbURI : atlasURI,
+    {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useUnifiedTopology: true
+});
 /** CONNECT TO mongoose **/
-  mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@${dbUrl}: true`)
+ 
   const db = mongoose.connection;
   db.on('error', console.error.bind(console, 'conection error'))
   db.once('open', () => {

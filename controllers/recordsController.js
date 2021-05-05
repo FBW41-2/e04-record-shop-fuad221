@@ -1,77 +1,43 @@
-const {Schema, model} = require('mongoose')
-//record schema
-const recordSchema = new Schema({
-    artist: String,
-    album_name: String,
-    year: Number,
-    price: Number
-})
-
-//record template , i need that when i need data
-const Record = model('Record', recordSchema)
-
-exports.getOrders = (req, res, next) => {
-    req.app.locals.db
-    .collection("orders")   // inter 
-    .find()                  //  method to get 
-    .toArray((err, docs) => {
-      res.json(docs);
-    });
-}
-
-// get all records
+const Record =require('../models/Record')
 exports.getRecords = (req, res, next) => {
-  // access db from global object   // select all records
-  req.app.locals.db
-    .collection("records")   // inter 
-    .find()                  //  method to get 
-    .toArray((err, docs) => {
-      res.json(docs);
-    });
+  const {recordsPerPage,pageNumber,sortOrder,sortField,search} = req.query
+//access Db
+  Record.find({title:{$regex:search,$options:"i"}},(err, records) => {
+      if (err) return console.error(err);
+      res.json(records)
+  })
+  .limit(Number(recordsPerPage))
+  //Start from specific entry number
+  .skip(pageNumber * recordsPerPage)
+  .sort({[sortField]:sortOrder})
 };
 // get specific record
 exports.getRecord = (req, res, next) => {
-  const { id } = req.params;    //why we use the params
-  req.app.locals.db
-    .collection("records")
-    .findOne({ _id: new mongodb.ObjectID(id) }, (err, result) => {
-      res.json(result);
-    });
-};
-// delete one record
-exports.deleteRecord = (req, res, next) => {
-  const { id } = req.params;  
-  req.app.locals.db
-    .collection("records")
-    .deleteOne({ _id: new mongodb.ObjectID(id) }, (err, result) => {
-      if (err) console.error(err);
-      console.log("del result", result);
-      res.json({ deleted: result.deletedCount });
-    });
-};
-// update one record
-exports.updateRecord = (req, res, next) => {
   const { id } = req.params;
-  req.app.locals.db.collection("records").updateOne(
-    // filter
-    { _id: new mongodb.ObjectID(id) },
-    // new data
-    {
-      $set: req.body,
-    },
-    // callback function
-    (err, entry) => {
-      res.json(entry);
-    }
-  );
+    console.log("get record", req.id)
+    Record.findById(id, (err, entry) => {
+      if (err) return res.json({error: err});
+      res.json(entry)
+    })
+  };
+exports.deleteRecord = (req, res, next) => {
+  const {id}= req.params;
+  Record.findByIdAndRemove(id,(err,entry)=>{
+    if(err) return res.json({error:err})
+    res.json({deleted:entry})
+  })
 };
-// create new record
+exports.updateRecord = (req, res, next) => {
+  const {id} = req.params
+  Record.findByIdAndUpdate(id,req.body,{new:true},(err,entry)=>{
+    if(err) return res.json({error:err})
+    res.json(entry)
+  })
+};
 exports.addRecord = (req, res, next) => {
-  const record = req.body;
-  // create new record
-  const newRecord = new Record(req.body)
-  newRecord.save((err, netry) => {
-    if(err) return console.error(err);
+  record=req.body
+  Record.create(record,(err,entry)=>{
+    if (err) return res.json({error:err})
     res.json(entry)
   })
 };
